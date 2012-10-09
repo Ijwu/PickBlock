@@ -1,0 +1,9 @@
+This is a plugin for TShock, a TerrariaServerAPI plugin.
+-----
+
+Allows for a player to "pick" blocks like in Minecraft's creative mode.
+
+A player may use the /pick command and then edit an object to gain a full stack of that object.
+
+Only command introduced: /pick
+Only permission introduced: pickblock
