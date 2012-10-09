@@ -3,7 +3,6 @@
 import System
 import TShockAPI
 import Terraria
-import Hooks
 
 public struct PickPlayer:
 	x as int
