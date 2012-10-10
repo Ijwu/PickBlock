@@ -185,7 +185,10 @@ public class PickBlock(TerrariaPlugin):
 		Commands.ChatCommands.Add(Command("pickblock",PickBlock, "pick"))
 
 	protected def Dispose(disposing as bool):
-	    super.Dispose(disposing)
+		if disposing:
+			GetDataHandlers.TileEdit -= OnTileEdit
+		super.Dispose(disposing)
+	   
 	    
 	private def PickBlock(args as CommandArgs):
 		player = Players[args.Player.Index]
@@ -230,4 +233,3 @@ public class PickBlock(TerrariaPlugin):
 		if player.pick:
 			GiveBlock(args.Player.Index, args.EditType)
 			args.Handled = true
-		
