@@ -15,15 +15,18 @@ public struct PickPlayer:
 [APIVersion(1,12)]
 public class PickBlock(TerrariaPlugin):
 	Players as Array = array(PickPlayer, 255)
-	TileIDMapping = {0: 'Dirt Block',
+	public TileIDMapping as Hash = {0: 'Dirt Block',
 					1: 'Stone Block',
+					2: 'Dirt Block',
 					3: 'Mushroom',
 					4: 'Torch',
+					5: 'Wood',
 					6: 'Iron Ore',
 					7: 'Copper Ore',
 					8: 'Gold Ore',
 					9: 'Silver Ore',
 					10: 'Wooden Door',
+					11: 'Wooden Door',
 					12: 'Life Crystal',
 					13: 'Bottle',
 					14: 'Wooden Table',
@@ -34,6 +37,7 @@ public class PickBlock(TerrariaPlugin):
 					19: 'Wood Platform',
 					21: 'Chest',
 					22: 'Demonite Ore',
+					23: 'Dirt Block',
 					24: 'Vile Mushroom',
 					25: 'Ebonstone Block',
 					27: 'Sunflower',
@@ -65,13 +69,16 @@ public class PickBlock(TerrariaPlugin):
 					57: 'Ash',
 					58: 'Hellstone',
 					59: 'Mud Block',
+					60: 'Mud Block',
 					63: 'Sapphire',
 					64: 'Ruby',
 					65: 'Emerald',
 					66: 'Topaz',
 					67: 'Amethyst',
 					68: 'Diamond',
+					70: 'Mud Block',
 					71: 'Glowing Mushroom',
+					72: 'Glowing Mushroom',
 					75: 'Obsidian Brick',
 					76: 'Hellstone Brick',
 					77: 'Hellforge',
@@ -100,6 +107,7 @@ public class PickBlock(TerrariaPlugin):
 					106: 'Sawmill',
 					107: 'Cobalt Ore',
 					108: 'Mythril Ore',
+					109: 'Dirt Block',
 					111: 'Adamantite Ore',
 					112: 'Ebonsand Block',
 					114: "Tinkerer's Workshop",
@@ -133,7 +141,7 @@ public class PickBlock(TerrariaPlugin):
 					147: 'Snow Block',
 					148: 'Snow Brick'}
 					
-	WallIDMapping = {1:"Stone Wall",
+	public WallIDMapping as Hash = {1:"Stone Wall",
 					 2: "Dirt Wall",
 					 4: "Wood Wall",
 					 5: "Gray Brick Wall",
@@ -161,6 +169,63 @@ public class PickBlock(TerrariaPlugin):
 					 29: "Candy Cane Wall",
 					 30: "Green Candy Cane Wall",
 					 31: "Snow Brick Wall"}
+					 
+	public StatueNameMapping as List= ["Armor Statue",
+					    "Angel Statue",
+					    "Star Statue",
+					    "Sword Statue",
+					    "Slime Statue",
+					    "Goblin Statue",
+					    "Shield Statue",
+					    "Bat Statue",
+					    "Fish Statue",
+					    "Bunny Statue",
+					    "Skeleton Statue",
+					    "Reaper Statue",
+					    "Woman Statue",
+					    "Imp Statue",
+					    "Gargoyle Statue",
+					    "Gloom Statue",
+					    "Hornet Statue",
+					    "Bomb Statue",
+					    "Crab Statue",
+					    "Hammer Statue",
+					    "Potion Statue",
+					    "Spear Statue",
+					    "Cross Statue",
+					    "Jellyfish Statue",
+					    "Bow Statue",
+					    "Boomerang Statue",
+					    "Boot Statue",
+					    "Chest Statue",
+					    "Bird Statue",
+					    "Axe Statue",
+					    "Corrupt Statue",
+					    "Tree Statue",
+					    "Anvil Statue",
+					    "Pickaxe Statue",
+					    "Mushroom Statue",
+					    "Eyeball Statue",
+					    "Pillar Statue",
+					    "Heart Statue",
+					    "Pot Statue",
+					    "Sunflower Statue",
+					    "King Statue",
+					    "Queen Statue",
+					    "Pirahna Statue"]
+	
+	public MusicBoxNameMapping as List = ["Music Box (Overworld Day)",
+							 "Music Box (Eerie)",
+							 "Music Box (Night)",
+							 "Music Box (Title)",
+							 "Music Box (Underground)",
+							 "Music Box (Boss 1)",
+							 "Music Box (Jungle)",
+							 "Music Box (Corruption)",
+							 "Music Box (Underground Corruption)",
+							 "Music Box (Boss 2)",
+							 "Music Box (Underground Hallow)",
+							 "Music Box (Boss 3)"]
 	
 	[Getter(Author)]
 	public override _Author = "Ijwu"
@@ -200,11 +265,10 @@ public class PickBlock(TerrariaPlugin):
 		plr as PickPlayer = Players[playerID]
 		picked as Tile = Main.tile[plr.x, plr.y]
 		player as TSPlayer = TShock.Players[playerID]
-		tiletype as int = picked.type
 		walltype as int = picked.wall
 		
 		if editType in [4,0]:
-			item as Item = TShock.Utils.GetItemByIdOrName(TileIDMapping[tiletype])[0]
+			item as Item = ReturnItem(picked)
 			player.GiveItem(item.type, item.name, item.width, item.height, item.maxStack, 0)
 			
 		elif editType == 2:
@@ -233,3 +297,38 @@ public class PickBlock(TerrariaPlugin):
 		if player.pick:
 			GiveBlock(args.Player.Index, args.EditType)
 			args.Handled = true
+
+	private def ReturnItem(tile as Tile) as Item:
+		if not tile.active:
+			return
+		multiframeTiles = [4,61,82,83,84,91,105,135,139,144,149]
+		if tile.type not in multiframeTiles:
+			return TShock.Utils.GetItemByIdOrName(TileIDMapping[tile.type])[0]
+		elif tile.type == 4:
+			return TShock.Utils.GetItemByIdOrName(["Torch", "Blue Torch", "Red Torch", "Green Torch", "Purple Torch", "White Torch", "Yellow Torch", "Demon Torch", "Cursed Torch"][tile.frameY / 22])[0]
+		elif tile.type == 61:
+			if tile.frameX == 180:
+				return TShock.Utils.GetItemByIdOrName("Jungle Spore")[0]
+		elif tile.type == 82:
+			return TShock.Utils.GetItemByIdOrName(["Daybloom", "Moonglow", "Blinkroot", "Deathweed", "Waterleaf", "Fireblossom"][tile.frameX / 18])[0]
+		elif tile.type == 83:
+			return TShock.Utils.GetItemByIdOrName(["Daybloom", "Moonglow", "Blinkroot", "Deathweed", "Waterleaf", "Fireblossom"][tile.frameX / 18])[0]
+		elif tile.type == 84:
+			return TShock.Utils.GetItemByIdOrName(["Daybloom", "Moonglow", "Blinkroot", "Deathweed", "Waterleaf", "Fireblossom"][tile.frameX / 18])[0]
+		elif tile.type == 91:
+			return TShock.Utils.GetItemByIdOrName(["Red Banner", "Green Banner", "Blue Banner", "Yellow Banner"][tile.frameX / 18])[0]
+		elif tile.type == 105:
+			return TShock.Utils.GetItemByIdOrName(StatueNameMapping[tile.frameX / 36])[0]
+		elif tile.type == 135:
+			return TShock.Utils.GetItemByIdOrName(["Red Pressure Plate", "Green Pressure Plate", "Gray Pressure Plate", "Brown Pressure Plate"][tile.frameY / 18])[0]
+		elif tile.type == 139:
+			return TShock.Utils.GetItemByIdOrName(MusicBoxNameMapping[tile.frameY / 36])[0]
+		elif tile.type == 144:
+			return TShock.Utils.GetItemByIdOrName(["1 Second Timer", "3 Second Timer", "5 Second Timer"][tile.frameX / 18])[0]
+		elif tile.type == 149:
+			return TShock.Utils.GetItemByIdOrName(["Blue Light", "Red Light", "Green Light", "Blue Light", "Red Light", "Green Light"][tile.frameX / 18])[0]
+	
+		
+			
+			
+		
